@@ -14,9 +14,9 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "HurleyAPI",
+        Title = "hurleyAPI",
         Version = "v1",
-        Description = "A RESTful API built with .NET for demonstration and development purposes."
+        Description = "An issue-tracking API for managing bugs across teams and projects."
     });
 });
 
@@ -30,9 +30,9 @@ if (app.Environment.IsDevelopment())
 }
 
 // Map root GET endpoint (health check/greeting)
-app.MapGet("/", () => Results.Ok("Welcome to the Hurley API."))
+app.MapGet("/", () => Results.Ok("Welcome to hurleyAPI."))
     .WithName("GetRoot")
-    .WithDescription("Returns a basic greeting and confirms that the HurleyAPI is operational.")
+    .WithDescription("Returns a basic greeting and confirms that hurleyAPI is operational.")
     .WithTags("General");
 
 app.Run();

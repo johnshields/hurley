@@ -1,2 +1,3 @@
-# hurley
-hurley web API in dotnet.
+# hurleyAPI
+
+An issue-tracking API for managing bugs across teams and projects
