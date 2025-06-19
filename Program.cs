@@ -1,5 +1,5 @@
 /*
- * HurleyAPI
+ * hurleyAPI
  * Developed by John Shields
  */
 
@@ -16,7 +16,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "hurleyAPI",
         Version = "v1",
-        Description = "An issue-tracking API for managing bugs across teams and projects."
+        Description = "A RESTful issue-tracking API for managing bugs across teams and projects."
     });
 });
 
