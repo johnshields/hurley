@@ -1,0 +1,27 @@
+﻿[
+  {
+    "id": "abc12345",
+    "title": "Leaking pipe in basement utility room",
+    "description": "Water leak detected during routine inspection. Needs immediate attention before drywall installation.",
+    "severity": "High",
+    "status": "Open",
+    "createdAt": "2024-06-17T00:00:00Z"
+  },
+  {
+    "id": "def67890",
+    "title": "Missing electrical outlet in office 203",
+    "description": "Plans show a power outlet on the north wall - not present during current walkthrough.",
+    "severity": "Medium",
+    "status": "InProgress",
+    "createdAt": "2024-06-19T00:00:00Z"
+  },
+  {
+    "id": "ghi98765",
+    "title": "Cracked tile in lobby floor",
+    "description": "One ceramic tile in front entrance is cracked and uneven. Safety concern for foot traffic.",
+    "severity": "Low",
+    "status": "Resolved",
+    "createdAt": "2024-06-13T00:00:00Z",
+    "resolvedAt": "2024-06-27T00:00:00Z"
+  }
+]

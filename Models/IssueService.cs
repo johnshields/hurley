@@ -1,35 +1,28 @@
-﻿namespace HurleyAPI.Models;
+﻿using System.Text.Json;
+
+namespace HurleyAPI.Models;
 
 public static class IssueService
 {
-    public static readonly List<IssueReport> Issues =
-    [
-        new IssueReport
-        {
-            Title = "Leaking pipe in basement utility room",
-            Description = "Water leak detected during routine inspection. Needs immediate attention before drywall installation.",
-            Severity = IssueSeverity.High,
-            Status = IssueStatus.Open,
-            CreatedAt = DateTime.UtcNow.AddDays(-3)
-        },
+    public static List<IssueReport> Issues { get; private set; } = [];
 
-        new IssueReport
+    public static void LoadIssuesFromFile(string path)
+    {
+        if (!File.Exists(path)) return;
+        
+        var json = File.ReadAllText(path);
+        
+        // Set up JSON serialization options
+        var options = new JsonSerializerOptions
         {
-            Title = "Missing electrical outlet in office 203",
-            Description = "Plans show a power outlet on the north wall - not present during current walkthrough.",
-            Severity = IssueSeverity.Medium,
-            Status = IssueStatus.InProgress,
-            CreatedAt = DateTime.UtcNow.AddDays(-1)
-        },
-
-        new IssueReport
-        {
-            Title = "Cracked tile in lobby floor",
-            Description = "One ceramic tile in front entrance is cracked and uneven. Safety concern for foot traffic.",
-            Severity = IssueSeverity.Low,
-            Status = IssueStatus.Resolved,
-            CreatedAt = DateTime.UtcNow.AddDays(-7),
-            ResolvedAt = DateTime.UtcNow.AddDays(7)
-        }
-    ];
+            PropertyNameCaseInsensitive = true,
+            Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
+        };
+        
+        // Deserialize the JSON string into a list of IssueReport objects
+        var loaded = JsonSerializer.Deserialize<List<IssueReport>>(json, options);
+        
+        if (loaded is not null)
+            Issues  = loaded;
+    }
 }

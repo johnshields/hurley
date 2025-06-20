@@ -6,6 +6,8 @@ public static class HurleyAPI
 {
     public static void Register(WebApplication app)
     {
+        IssueService.LoadIssuesFromFile("Data/issues.json");
+        
         app.MapGet("/", () => Results.Ok(new
             {
                 message = "Welcome to HurleyAPI.",
@@ -17,10 +19,10 @@ public static class HurleyAPI
             .WithDescription("Returns a basic greeting and confirms that HurleyAPI is operational.")
             .WithTags("General");
         
-        app.MapGet("/issues", () =>
-            Results.Ok(IssueService.Issues))
+        app.MapGet("/issues", () => Results.Ok(IssueService.Issues))
             .WithName("GetAllIssues")
             .WithDescription("Retrieves a list of all issues.")
-            .WithTags("Issues");
+            .WithTags("Issues")
+            .Produces<List<IssueReport>>();
     }
 }
