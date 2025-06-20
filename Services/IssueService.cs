@@ -48,4 +48,24 @@ public static class IssueService
         SaveIssuesToFile("Data/issues.json");
         return true;
     }
+
+    public static IssueReport? UpdateIssue(string id, IssueReport updatedIssue)
+    {
+        var existing = Issues.FirstOrDefault(i => i.Id == id);
+        if (existing is null) return null;
+        
+        // Keep existing ID and CreatedAt timestamp
+        updatedIssue.Id = existing.Id;
+        updatedIssue.CreatedAt = existing.CreatedAt;
+        
+        updatedIssue.ResolvedAt = updatedIssue.Status == IssueStatus.Resolved 
+            ? DateTime.UtcNow
+            : null;
+        
+        var index = Issues.IndexOf(existing);
+        Issues[index] = updatedIssue;
+        
+        SaveIssuesToFile("Data/issues.json");
+        return updatedIssue;
+    }
 }

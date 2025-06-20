@@ -38,7 +38,7 @@ public static class HurleyAPI
             .WithName("GetIssueById")
             .WithDescription("Retrieves a single issue by its unique ID.")
             .WithTags("Issues")
-            .Produces<IssueReport>(StatusCodes.Status200OK)
+            .Produces<IssueReport>()
             .Produces(StatusCodes.Status404NotFound);
 
         // endpoint - CreateIssue
@@ -56,7 +56,22 @@ public static class HurleyAPI
             .WithDescription("Creates a new issue.")
             .WithTags("Issues")
             .Produces<IssueReport>(StatusCodes.Status201Created);
-
+        
+        // endpoint - UpdateIssue
+        app.MapPut("/issues/{id}", (string id, IssueReport updatedIssue) =>
+            {
+                var result = IssueService.UpdateIssue(id, updatedIssue);
+                return result is null
+                    ? Results.NotFound(new { error = $"Issue with ID '{id}' not found." })
+                    : Results.Ok(result);
+            })
+            .WithName("UpdateIssue")
+            .WithDescription("Updates an issue by its unique ID.")
+            .WithTags("Issues")
+            .Produces<IssueReport>()
+            .Produces(StatusCodes.Status404NotFound);
+        
+        // endpoint - DeleteIssueById
         app.MapDelete("issues/{id}", (string id) =>
             {
                 var deleted = IssueService.DeleteIssueById(id);
