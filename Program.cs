@@ -4,19 +4,20 @@
  */
 
 using Microsoft.OpenApi.Models;
+using Hurley.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 
-// Register API and Swagger services
+// Register Swagger services
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "hurleyAPI",
         Version = "v1",
-        Description = "A RESTful issue-tracking API for managing bugs across teams and projects."
+        Description = "A RESTful issue-tracking API for managing issues across teams and projects."
     });
 });
 
@@ -29,10 +30,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Map root GET endpoint (health check/greeting)
-app.MapGet("/", () => Results.Ok("Welcome to hurleyAPI."))
-    .WithName("GetRoot")
-    .WithDescription("Returns a basic greeting and confirms that hurleyAPI is operational.")
-    .WithTags("General");
+// Register all API routes
+HurleyApi.Register(app);
 
 app.Run();
