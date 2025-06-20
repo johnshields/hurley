@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
+using HurleyAPI.Models;
 
-namespace HurleyAPI.Models;
+namespace HurleyAPI.Services;
 
 public static class IssueService
 {
@@ -9,21 +10,21 @@ public static class IssueService
     public static void LoadIssuesFromFile(string path)
     {
         if (!File.Exists(path)) return;
-        
+
         var json = File.ReadAllText(path);
-        
+
         // Set up JSON serialization options
         var options = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
             Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
         };
-        
+
         // Deserialize the JSON string into a list of IssueReport objects
         var loaded = JsonSerializer.Deserialize<List<IssueReport>>(json, options);
-        
+
         if (loaded is not null)
-            Issues  = loaded;
+            Issues = loaded;
     }
 
     public static void SaveIssuesToFile(string path)
@@ -33,7 +34,7 @@ public static class IssueService
             WriteIndented = true,
             Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
         };
-        
+
         var json = JsonSerializer.Serialize(Issues, options);
         File.WriteAllText(path, json);
     }

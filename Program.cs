@@ -1,5 +1,5 @@
 /*
- * HurleyAPI 
+ * HurleyAPI
  * Developed by John Shields
  */
 
