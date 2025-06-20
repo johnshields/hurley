@@ -38,4 +38,14 @@ public static class IssueService
         var json = JsonSerializer.Serialize(Issues, options);
         File.WriteAllText(path, json);
     }
+
+    public static bool DeleteIssueById(string id)
+    {
+        var issues = Issues.FirstOrDefault(i => i.Id == id);
+        if (issues is null) return false;
+        
+        Issues.Remove(issues);
+        SaveIssuesToFile("Data/issues.json");
+        return true;
+    }
 }

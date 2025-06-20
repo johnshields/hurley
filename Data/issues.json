@@ -25,14 +25,5 @@
     "Status": "Resolved",
     "CreatedAt": "2024-06-13T00:00:00Z",
     "ResolvedAt": "2024-06-27T00:00:00Z"
-  },
-  {
-    "Id": "cc557e3a",
-    "Title": "Loose railing on 2nd floor",
-    "Description": "The stair railing is unstable and needs to be secured.",
-    "Severity": "Medium",
-    "Status": "Open",
-    "CreatedAt": "2025-06-20T05:33:59.7833527Z",
-    "ResolvedAt": null
   }
 ]

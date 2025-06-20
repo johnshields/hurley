@@ -36,7 +36,7 @@ public static class HurleyAPI
                     : Results.NotFound(new { message = $"Issue with ID '{id}' not found." });
             })
             .WithName("GetIssueById")
-            .WithDescription("Retrieves a single issue by ID.")
+            .WithDescription("Retrieves a single issue by its unique ID.")
             .WithTags("Issues")
             .Produces<IssueReport>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound);
@@ -56,5 +56,18 @@ public static class HurleyAPI
             .WithDescription("Creates a new issue.")
             .WithTags("Issues")
             .Produces<IssueReport>(StatusCodes.Status201Created);
+
+        app.MapDelete("issues/{id}", (string id) =>
+            {
+                var deleted = IssueService.DeleteIssueById(id);
+                return deleted
+                    ? Results.Ok(new { message = $"Issue with ID '{id}' was deleted." })
+                    : Results.NotFound(new { error = $"Issue with ID '{id}' not found." });
+            })
+            .WithName("DeleteIssueById")
+            .WithDescription("Deletes an issue by its unique ID.")
+            .WithTags("Issues")
+            .Produces(200)
+            .Produces(404);
     }
 }
