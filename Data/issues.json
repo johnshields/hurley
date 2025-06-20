@@ -1,27 +1,38 @@
-﻿[
+[
   {
-    "id": "abc12345",
-    "title": "Leaking pipe in basement utility room",
-    "description": "Water leak detected during routine inspection. Needs immediate attention before drywall installation.",
-    "severity": "High",
-    "status": "Open",
-    "createdAt": "2024-06-17T00:00:00Z"
+    "Id": "abc12345",
+    "Title": "Leaking pipe in basement utility room",
+    "Description": "Water leak detected during routine inspection. Needs immediate attention before drywall installation.",
+    "Severity": "High",
+    "Status": "Open",
+    "CreatedAt": "2024-06-17T00:00:00Z",
+    "ResolvedAt": null
   },
   {
-    "id": "def67890",
-    "title": "Missing electrical outlet in office 203",
-    "description": "Plans show a power outlet on the north wall - not present during current walkthrough.",
-    "severity": "Medium",
-    "status": "InProgress",
-    "createdAt": "2024-06-19T00:00:00Z"
+    "Id": "def67890",
+    "Title": "Missing electrical outlet in office 203",
+    "Description": "Plans show a power outlet on the north wall - not present during current walkthrough.",
+    "Severity": "Medium",
+    "Status": "InProgress",
+    "CreatedAt": "2024-06-19T00:00:00Z",
+    "ResolvedAt": null
   },
   {
-    "id": "ghi98765",
-    "title": "Cracked tile in lobby floor",
-    "description": "One ceramic tile in front entrance is cracked and uneven. Safety concern for foot traffic.",
-    "severity": "Low",
-    "status": "Resolved",
-    "createdAt": "2024-06-13T00:00:00Z",
-    "resolvedAt": "2024-06-27T00:00:00Z"
+    "Id": "ghi98765",
+    "Title": "Cracked tile in lobby floor",
+    "Description": "One ceramic tile in front entrance is cracked and uneven. Safety concern for foot traffic.",
+    "Severity": "Low",
+    "Status": "Resolved",
+    "CreatedAt": "2024-06-13T00:00:00Z",
+    "ResolvedAt": "2024-06-27T00:00:00Z"
+  },
+  {
+    "Id": "cc557e3a",
+    "Title": "Loose railing on 2nd floor",
+    "Description": "The stair railing is unstable and needs to be secured.",
+    "Severity": "Medium",
+    "Status": "Open",
+    "CreatedAt": "2025-06-20T05:33:59.7833527Z",
+    "ResolvedAt": null
   }
 ]

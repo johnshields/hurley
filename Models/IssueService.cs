@@ -25,4 +25,16 @@ public static class IssueService
         if (loaded is not null)
             Issues  = loaded;
     }
+
+    public static void SaveIssuesToFile(string path)
+    {
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
+        };
+        
+        var json = JsonSerializer.Serialize(Issues, options);
+        File.WriteAllText(path, json);
+    }
 }
