@@ -6,7 +6,8 @@ namespace HurleyAPI.Services;
 public static class IssueService
 {
     public static List<IssueReport> Issues { get; private set; } = [];
-
+    
+    // Works with GetAllIssues endpoint
     public static void LoadIssuesFromFile(string path)
     {
         if (!File.Exists(path)) return;
@@ -26,7 +27,8 @@ public static class IssueService
         if (loaded is not null)
             Issues = loaded;
     }
-
+    
+    // Works with CreateIssue endpoint
     public static void SaveIssuesToFile(string path)
     {
         var options = new JsonSerializerOptions
@@ -38,18 +40,9 @@ public static class IssueService
         var json = JsonSerializer.Serialize(Issues, options);
         File.WriteAllText(path, json);
     }
-
-    public static bool DeleteIssueById(string id)
-    {
-        var issues = Issues.FirstOrDefault(i => i.Id == id);
-        if (issues is null) return false;
-        
-        Issues.Remove(issues);
-        SaveIssuesToFile("Data/issues.json");
-        return true;
-    }
-
-    public static IssueReport? UpdateIssue(string id, IssueReport updatedIssue)
+    
+    // Works with UpdateIssue endpoint
+    public static IssueReport? UpdateIssueById(string id, IssueReport updatedIssue)
     {
         var existing = Issues.FirstOrDefault(i => i.Id == id);
         if (existing is null) return null;
@@ -67,5 +60,16 @@ public static class IssueService
         
         SaveIssuesToFile("Data/issues.json");
         return updatedIssue;
+    }
+
+    // Works with DeleteIssueById endpoint
+    public static bool DeleteIssueById(string id)
+    {
+        var issues = Issues.FirstOrDefault(i => i.Id == id);
+        if (issues is null) return false;
+        
+        Issues.Remove(issues);
+        SaveIssuesToFile("Data/issues.json");
+        return true;
     }
 }

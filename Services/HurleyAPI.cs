@@ -57,15 +57,15 @@ public static class HurleyAPI
             .WithTags("Issues")
             .Produces<IssueReport>(StatusCodes.Status201Created);
         
-        // endpoint - UpdateIssue
+        // endpoint - UpdateIssueById
         app.MapPut("/issues/{id}", (string id, IssueReport updatedIssue) =>
             {
-                var result = IssueService.UpdateIssue(id, updatedIssue);
+                var result = IssueService.UpdateIssueById(id, updatedIssue);
                 return result is null
                     ? Results.NotFound(new { error = $"Issue with ID '{id}' not found." })
                     : Results.Ok(result);
             })
-            .WithName("UpdateIssue")
+            .WithName("UpdateIssueById")
             .WithDescription("Updates an issue by its unique ID.")
             .WithTags("Issues")
             .Produces<IssueReport>()
