@@ -1,10 +1,9 @@
 /*
- * hurleyAPI
+ * HurleyAPI 
  * Developed by John Shields
  */
 
 using Microsoft.OpenApi.Models;
-using Hurley.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +14,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "hurleyAPI",
+        Title = "HurleyAPI",
         Version = "v1",
         Description = "A RESTful issue-tracking API for managing issues across teams and projects."
     });
@@ -31,6 +30,6 @@ if (app.Environment.IsDevelopment())
 }
 
 // Register all API routes
-HurleyApi.Register(app);
+HurleyAPI.Services.HurleyAPI.Register(app);
 
 app.Run();

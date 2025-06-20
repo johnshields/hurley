@@ -1,18 +1,18 @@
-﻿namespace Hurley.Services;
+﻿namespace HurleyAPI.Services;
 
-public static class HurleyApi
+public static class HurleyAPI
 {
     public static void Register(WebApplication app)
     {
         app.MapGet("/", () => Results.Ok(new
             {
-                message = "Welcome to hurleyAPI.",
+                message = "Welcome to HurleyAPI.",
                 status = "OK",
                 version = "v1",
                 timestamp = DateTime.UtcNow
             }))
             .WithName("GetRoot")
-            .WithDescription("Returns a basic greeting and confirms that hurleyAPI is operational.")
+            .WithDescription("Returns a basic greeting and confirms that HurleyAPI is operational.")
             .WithTags("General");
     }
 }
