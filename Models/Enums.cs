@@ -1,4 +1,4 @@
-﻿namespace Hurley.Models;
+﻿namespace HurleyAPI.Models;
 
 public enum IssueSeverity
 {

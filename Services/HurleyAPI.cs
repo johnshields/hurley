@@ -1,4 +1,6 @@
-﻿namespace HurleyAPI.Services;
+﻿using HurleyAPI.Models;
+
+namespace HurleyAPI.Services;
 
 public static class HurleyAPI
 {
@@ -14,5 +16,11 @@ public static class HurleyAPI
             .WithName("GetRoot")
             .WithDescription("Returns a basic greeting and confirms that HurleyAPI is operational.")
             .WithTags("General");
+        
+        app.MapGet("/issues", () =>
+            Results.Ok(IssueService.Issues))
+            .WithName("GetAllIssues")
+            .WithDescription("Retrieves a list of all issues.")
+            .WithTags("Issues");
     }
 }

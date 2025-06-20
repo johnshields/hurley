@@ -1,8 +1,8 @@
-﻿namespace Hurley.Models;
+﻿namespace HurleyAPI.Models;
 
 public class IssueReport
 {
-    public int Id { get; set; }
+    public string Id { get; set; } = Guid.NewGuid().ToString("N")[..8];
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public IssueSeverity Severity { get; set; } = IssueSeverity.Unknown;
