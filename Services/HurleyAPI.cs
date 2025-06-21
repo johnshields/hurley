@@ -6,9 +6,21 @@ public static class HurleyAPI
 {
     public static void Register(WebApplication app)
     {
+        // Load persisted issues at startup
         IssueService.LoadIssuesFromFile("Data/issues.json");
+        
+        Root(app);
 
-        // endpoint - GetRoot
+        // Issues endpoints
+        GetAllIssues(app);
+        GetIssueById(app);
+        CreateIssue(app);
+        UpdateIssueById(app);
+        DeleteIssueById(app);
+    }
+
+    private static void Root(WebApplication app)
+    {
         app.MapGet("/", () => Results.Ok(new
             {
                 message = "Welcome to HurleyAPI.",
@@ -19,15 +31,19 @@ public static class HurleyAPI
             .WithName("GetRoot")
             .WithDescription("Returns a basic greeting and confirms that HurleyAPI is operational.")
             .WithTags("General");
+    }
 
-        // endpoint - GetAllIssues
+    private static void GetAllIssues(WebApplication app)
+    {
         app.MapGet("/issues", () => Results.Ok(IssueService.Issues))
             .WithName("GetAllIssues")
             .WithDescription("Retrieves a list of all issues.")
             .WithTags("Issues")
             .Produces<List<IssueReport>>();
+    }
 
-        // endpoint - GetIssueById
+    private static void GetIssueById(WebApplication app)
+    {
         app.MapGet("/issues/{id}", (string id) =>
             {
                 var issue = IssueService.Issues.FirstOrDefault(x => x.Id == id);
@@ -40,8 +56,10 @@ public static class HurleyAPI
             .WithTags("Issues")
             .Produces<IssueReport>()
             .Produces(StatusCodes.Status404NotFound);
+    }
 
-        // endpoint - CreateIssue
+    private static void CreateIssue(WebApplication app)
+    {
         app.MapPost("/issues", (IssueReport newIssue) =>
             {
                 newIssue.Id = Guid.NewGuid().ToString("N")[..8];
@@ -56,8 +74,10 @@ public static class HurleyAPI
             .WithDescription("Creates a new issue.")
             .WithTags("Issues")
             .Produces<IssueReport>(StatusCodes.Status201Created);
-        
-        // endpoint - UpdateIssueById
+    }
+
+    private static void UpdateIssueById(WebApplication app)
+    {
         app.MapPut("/issues/{id}", (string id, IssueReport updatedIssue) =>
             {
                 var result = IssueService.UpdateIssueById(id, updatedIssue);
@@ -70,8 +90,10 @@ public static class HurleyAPI
             .WithTags("Issues")
             .Produces<IssueReport>()
             .Produces(StatusCodes.Status404NotFound);
-        
-        // endpoint - DeleteIssueById
+    }
+
+    private static void DeleteIssueById(WebApplication app)
+    {
         app.MapDelete("issues/{id}", (string id) =>
             {
                 var deleted = IssueService.DeleteIssueById(id);
