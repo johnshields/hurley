@@ -5,71 +5,60 @@ namespace HurleyAPI.Services;
 
 public static class IssueService
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        WriteIndented = true,
+        Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
+    };
+
     public static List<IssueReport> Issues { get; private set; } = [];
-    
-    // Works with GetAllIssues endpoint
+
+    // Load all issues from a local JSON file
     public static void LoadIssuesFromFile(string path)
     {
         if (!File.Exists(path)) return;
 
         var json = File.ReadAllText(path);
-
-        // Set up JSON serialization options
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
-        };
-
-        // Deserialize the JSON string into a list of IssueReport objects
-        var loaded = JsonSerializer.Deserialize<List<IssueReport>>(json, options);
-
+        var loaded = JsonSerializer.Deserialize<List<IssueReport>>(json, JsonOptions);
         if (loaded is not null)
             Issues = loaded;
     }
-    
-    // Works with CreateIssue endpoint
+
+    // Save current issues to a local JSON file
     public static void SaveIssuesToFile(string path)
     {
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
-        };
-
-        var json = JsonSerializer.Serialize(Issues, options);
+        var json = JsonSerializer.Serialize(Issues, JsonOptions);
         File.WriteAllText(path, json);
     }
-    
-    // Works with UpdateIssue endpoint
-    public static IssueReport? UpdateIssueById(string id, IssueReport updatedIssue)
+
+    // Update an issue by ID
+    public static IssueReport? UpdateIssueById(string id, IssueReport updated)
     {
         var existing = Issues.FirstOrDefault(i => i.Id == id);
         if (existing is null) return null;
-        
-        // Keep existing ID and CreatedAt timestamp
-        updatedIssue.Id = existing.Id;
-        updatedIssue.CreatedAt = existing.CreatedAt;
-        
-        updatedIssue.ResolvedAt = updatedIssue.Status == IssueStatus.Resolved 
+
+        updated.Id = existing.Id;
+        updated.CreatedAt = existing.CreatedAt;
+        updated.ResolvedAt = updated.Status == IssueStatus.Resolved
             ? DateTime.UtcNow
             : null;
-        
-        var index = Issues.IndexOf(existing);
-        Issues[index] = updatedIssue;
-        
+
+        Issues[Issues.IndexOf(existing)] = updated;
         SaveIssuesToFile("Data/issues.json");
-        return updatedIssue;
+
+        return updated;
     }
 
-    // Works with DeleteIssueById endpoint
+    // Delete an issue by ID
     public static bool DeleteIssueById(string id)
     {
-        var issues = Issues.FirstOrDefault(i => i.Id == id);
-        if (issues is null) return false;
-        
-        Issues.Remove(issues);
+        var existing = Issues.FirstOrDefault(i => i.Id == id);
+        if (existing is null) return false;
+
+        Issues.Remove(existing);
         SaveIssuesToFile("Data/issues.json");
+
         return true;
     }
 }
