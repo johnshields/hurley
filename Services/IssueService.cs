@@ -12,7 +12,7 @@ public static class IssueService
         Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
     };
 
-    public static List<IssueReport> Issues { get; private set; } = [];
+    public static List<IssueReport> Issues { get; set; } = [];
 
     // Load all issues from a local JSON file
     public static void LoadIssuesFromFile(string path)
