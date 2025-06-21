@@ -8,7 +8,7 @@ public static class HurleyAPI
     {
         // Load persisted issues at startup
         IssueService.LoadIssuesFromFile("Data/issues.json");
-        
+
         Root(app);
 
         // Issues endpoints
@@ -104,7 +104,7 @@ public static class HurleyAPI
             .WithName("DeleteIssueById")
             .WithDescription("Deletes an issue by its unique ID.")
             .WithTags("Issues")
-            .Produces(200)
-            .Produces(404);
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound);
     }
 }

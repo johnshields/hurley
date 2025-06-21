@@ -1,0 +1,7 @@
+﻿https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis
+https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle
+https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-converters-how-to
+https://learn.microsoft.com/en-us/dotnet/api/system.text.json.serialization.jsonstringenumconverter
+https://stackoverflow.com/questions/9278909/net-short-unique-identifier
+https://github.com/dotnet/aspnetcore
+https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore/test/integration-tests
