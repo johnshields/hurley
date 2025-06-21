@@ -124,7 +124,7 @@ public class IssueServiceTests
         IssueService.Issues = [GetTestIssues().First()];
 
         // Act
-        var result = IssueService.DeleteIssueById("not found");
+        var result = IssueService.DeleteIssueById("notFound");
 
         // Assert
         Assert.False(result);
