@@ -3,38 +3,50 @@
  * Developed by John Shields
  */
 
+using ApiService = HurleyAPI.Services.HurleyAPI;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
+// Configure services
+ConfigureServices(builder.Services);
 
-builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
-{
-    options.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-});
-
-// Register Swagger services
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "HurleyAPI",
-        Version = "v1",
-        Description = "A RESTful issue-tracking API for managing issues across teams and projects."
-    });
-});
-
+// Build the app
 var app = builder.Build();
 
-// Enable Swagger middleware in development mode
-if (app.Environment.IsDevelopment())
+// Configure middleware and endpoints
+ConfigureMiddleware(app);
+app.Run();
+return;
+
+static void ConfigureServices(IServiceCollection services)
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    services.AddEndpointsApiExplorer();
+
+    services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+    {
+        options.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
+
+    services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "HurleyAPI",
+            Version = "v1",
+            Description = "A RESTful issue-tracking API for managing issues across teams and projects."
+        });
+    });
 }
 
-// Register all API routes
-HurleyAPI.Services.HurleyAPI.Register(app);
+static void ConfigureMiddleware(WebApplication app)
+{
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
-app.Run();
+    // Register API routes
+    ApiService.Register(app);
+}
