@@ -29,50 +29,51 @@ public class IssueServiceTests
         }
     };
 
-    // Test: Verifies that valid JSON correctly loads into IssueService.Issues
+    // Verifies that valid JSON correctly loads into IssueService.Issues
     [Fact]
     public void LoadIssuesFromFile_ValidJson_LoadsIssues()
     {
         var json = JsonSerializer.Serialize(GetTestIssues(), JsonOptions);
-
         File.WriteAllText(TempFilePath, json);
 
+        // Act
         IssueService.LoadIssuesFromFile(TempFilePath);
 
-        // Assert that exactly one issue is loaded and that the title matches
-        Assert.Single(IssueService.Issues);
+        // Assert
+        Assert.Single(IssueService.Issues); 
         Assert.Equal("Test Issue", IssueService.Issues[0].Title);
     }
 
-    // Test: Ensures that attempting to load a non-existent file does not throw an exception
+    // Ensures that attempting to load a non-existent file does not throw
     [Fact]
     public void LoadIssuesFromFile_NonExistentFile_DoesNotThrow()
     {
+        // Act
         var exception = Record.Exception(() => IssueService.LoadIssuesFromFile("nonexistent_file.json"));
+
+        // Assert
         Assert.Null(exception);
     }
 
-    // Test: Verifies that when a valid list of IssueReports is provided
-    // the SaveIssuesToFile method creates a file at the given path, writes valid JSON to it,
-    // and the contents can be deserialized correctly, preserving the expected data.
+    // Verifies that issues are saved to file as valid JSON
     [Fact]
     public void SaveIssuesToFile_CreatesFileWithValidJson()
     {
         IssueService.Issues = GetTestIssues();
 
+        // Act
         IssueService.SaveIssuesToFile(TempFilePath);
 
+        // Assert
         Assert.True(File.Exists(TempFilePath));
-
         var content = File.ReadAllText(TempFilePath);
         var loaded = JsonSerializer.Deserialize<List<IssueReport>>(content, JsonOptions);
-
         Assert.NotNull(loaded);
         Assert.Single(loaded);
         Assert.Equal("Test Issue", loaded[0].Title);
     }
 
-    // Test: Verifies that updating an existing issue by ID correctly updates its properties
+    // Ensures that updating an issue by ID modifies it correctly
     [Fact]
     public void UpdateIssueById_ExistingId_UpdatesIssueCorrectly()
     {
@@ -87,9 +88,10 @@ public class IssueServiceTests
             Status = IssueStatus.Resolved
         };
 
+        // Act
         var result = IssueService.UpdateIssueById(original.Id, updated);
 
-        // Assert: Ensure the returned result is not null and properties are updated correctly
+        // Assert
         Assert.NotNull(result);
         Assert.Equal(original.Id, result.Id);
         Assert.Equal("Updated Title", result.Title);
@@ -100,7 +102,57 @@ public class IssueServiceTests
         Assert.NotNull(result.ResolvedAt);
     }
 
-    // Cleanup after tests
+    // Ensures that deleting an existing issue removes it and returns true
+    [Fact]
+    public void DeleteIssueById_ExistingId_RemovesIssue_AndReturnsTrue()
+    {
+        var issue = GetTestIssues().First();
+        IssueService.Issues = [issue];
+
+        // Act
+        var result = IssueService.DeleteIssueById(issue.Id);
+
+        // Assert
+        Assert.True(result);
+        Assert.Empty(IssueService.Issues);
+    }
+
+    // Ensures that attempting to delete a non-existent issue returns false
+    [Fact]
+    public void DeleteIssueById_NonExistingId_ReturnsFalse_AndKeepsListUnchanged()
+    {
+        IssueService.Issues = [GetTestIssues().First()];
+
+        // Act
+        var result = IssueService.DeleteIssueById("not found");
+
+        // Assert
+        Assert.False(result);
+        Assert.Single(IssueService.Issues);
+    }
+
+    // Ensures that deletion is persisted by verifying the updated file contents
+    [Fact]
+    public void DeleteIssueById_UpdatesJsonFile()
+    {
+        var issue = GetTestIssues().First();
+        const string filePath = "Data/issues.json";
+
+        if (File.Exists(filePath)) File.Delete(filePath);
+
+        IssueService.Issues = [issue];
+        IssueService.SaveIssuesToFile(filePath);
+
+        // Act
+        IssueService.DeleteIssueById(issue.Id);
+
+        // Assert
+        var loaded = JsonSerializer.Deserialize<List<IssueReport>>(File.ReadAllText(filePath), JsonOptions);
+        Assert.NotNull(loaded);
+        Assert.Empty(loaded);
+    }
+
+    // Cleanup temp test file
     ~IssueServiceTests()
     {
         if (File.Exists(TempFilePath))
