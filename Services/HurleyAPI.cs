@@ -19,7 +19,6 @@ public static class HurleyAPI
         CreateIssue(app);
         UpdateIssueById(app);
         DeleteIssueById(app);
-        GetIssuesBySeverity(app);
     }
 
     private static void Root(WebApplication app)
@@ -38,9 +37,24 @@ public static class HurleyAPI
 
     private static void GetAllIssues(WebApplication app)
     {
-        app.MapGet("/issues", () => Results.Ok(IssueService.Issues))
+        app.MapGet("/issues", (
+                IssueSeverity? severity,
+                IssueStatus? status,
+                DateTime? createdAfter,
+                DateTime? createdBefore) =>
+            {
+                // Filters the list of issues based on optional query parameters: severity, status and created date
+                var filteredIssues = IssueService.Issues
+                    .Where(i => !severity.HasValue || i.Severity == severity.Value)
+                    .Where(i => !status.HasValue || i.Status == status.Value)
+                    .Where(i => !createdAfter.HasValue || i.CreatedAt >= createdAfter.Value)
+                    .Where(i => !createdBefore.HasValue || i.CreatedAt <= createdBefore.Value)
+                    .ToList();
+
+                return Results.Ok(filteredIssues);
+            })
             .WithName("GetAllIssues")
-            .WithDescription("Retrieves a list of all issues.")
+            .WithDescription("Retrieves all issues or filters by severity, status, or creation date.")
             .WithTags("Issues")
             .Produces<List<IssueReport>>();
     }
@@ -109,21 +123,5 @@ public static class HurleyAPI
             .WithTags("Issues")
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound);
-    }
-
-    private static void GetIssuesBySeverity(WebApplication app)
-    {
-        app.MapGet("/issues/filter", (IssueSeverity severity) =>
-            {
-                var filteredIssues = IssueService.Issues
-                    .Where(i => i.Severity == severity)
-                    .ToList();
-
-                return Results.Ok(filteredIssues);
-            })
-            .WithName("GetIssuesBySeverity")
-            .WithDescription("Filters issues by their severity level.")
-            .WithTags("Issues")
-            .Produces<List<IssueReport>>();
     }
 }

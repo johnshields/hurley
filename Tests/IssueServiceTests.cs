@@ -25,7 +25,7 @@ public class IssueServiceTests
             Description = "Test Description",
             Severity = IssueSeverity.High,
             Status = IssueStatus.Open,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow.AddDays(-3)
         }
     };
 
@@ -152,21 +152,30 @@ public class IssueServiceTests
         Assert.Empty(loaded);
     }
 
-    // Ensures filtering the issues by IssueSeverity return the correct subset
+    // Ensures filtering by severity, status, and created date returns the correct subset of issues
     [Fact]
-    public void FilterIssuesBySeverity_ReturnsCorrectSubset()
+    public void FilterIssues_ReturnsCorrectSubset()
     {
         IssueService.Issues = GetTestIssues();
         var severityFilter = IssueSeverity.High;
+        var statusFilter = IssueStatus.Open;
+        var createdAfter = DateTime.UtcNow.AddDays(-5);
+        var createdBefore = DateTime.UtcNow;
 
         // Act
         var filtered = IssueService.Issues
             .Where(i => i.Severity == severityFilter)
+            .Where(i => i.Status == statusFilter)
+            .Where(i => i.CreatedAt >= createdAfter && i.CreatedAt <= createdBefore)
             .ToList();
 
         // Assert
         Assert.Single(filtered);
-        Assert.All(filtered, issue => Assert.Equal(IssueSeverity.High, issue.Severity));
+        var issue = filtered.First();
+        Assert.Equal("12345678", issue.Id);
+        Assert.Equal(IssueSeverity.High, issue.Severity);
+        Assert.Equal(IssueStatus.Open, issue.Status);
+        Assert.InRange(issue.CreatedAt, createdAfter, createdBefore);
     }
 
     // Cleanup temp test file
