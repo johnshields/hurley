@@ -40,7 +40,7 @@ public class IssueServiceTests
         IssueService.LoadIssuesFromFile(TempFilePath);
 
         // Assert
-        Assert.Single(IssueService.Issues); 
+        Assert.Single(IssueService.Issues);
         Assert.Equal("Test Issue", IssueService.Issues[0].Title);
     }
 

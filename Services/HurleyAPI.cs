@@ -5,7 +5,7 @@ namespace HurleyAPI.Services;
 public static class HurleyAPI
 {
     private static readonly string DataFilePath = IssueService.DataFilePath;
-    
+
     // Entry point: register routes and load data
     public static void Register(WebApplication app)
     {
@@ -110,7 +110,7 @@ public static class HurleyAPI
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound);
     }
-    
+
     private static void GetIssuesBySeverity(WebApplication app)
     {
         app.MapGet("/issues/filter", (IssueSeverity severity) =>
@@ -118,7 +118,7 @@ public static class HurleyAPI
                 var filteredIssues = IssueService.Issues
                     .Where(i => i.Severity == severity)
                     .ToList();
-            
+
                 return Results.Ok(filteredIssues);
             })
             .WithName("GetIssuesBySeverity")
