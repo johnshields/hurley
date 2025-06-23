@@ -8,9 +8,10 @@ obj/
 *.userosscache
 *.sln.docstates
 
-## Rider 
+## IDE 
 .idea/
 .vscode/
+.vs/
 *.code-workspace
 
 ## .NET generated files
