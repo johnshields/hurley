@@ -4,10 +4,13 @@ namespace HurleyAPI.Services;
 
 public static class HurleyAPI
 {
+    private static readonly string DataFilePath = IssueService.DataFilePath;
+    
+    // Entry point: register routes and load data
     public static void Register(WebApplication app)
     {
         // Load persisted issues at startup
-        IssueService.LoadIssuesFromFile("Data/issues.json");
+        IssueService.LoadIssuesFromFile(DataFilePath);
 
         Root(app);
 
@@ -67,7 +70,7 @@ public static class HurleyAPI
                 newIssue.CreatedAt = DateTime.UtcNow;
 
                 IssueService.Issues.Add(newIssue);
-                IssueService.SaveIssuesToFile("Data/issues.json");
+                IssueService.SaveIssuesToFile(DataFilePath);
 
                 return Results.Created($"/issues/{newIssue.Id}", newIssue);
             })

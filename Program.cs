@@ -23,6 +23,7 @@ ConfigureMiddleware(app);
 app.Run();
 return;
 
+// Register all required services into the IServiceCollection
 static void ConfigureServices(IServiceCollection services)
 {
     services.AddEndpointsApiExplorer();
@@ -43,6 +44,7 @@ static void ConfigureServices(IServiceCollection services)
     });
 }
 
+// Set up middleware pipeline and route registration
 static void ConfigureMiddleware(WebApplication app)
 {
     if (app.Environment.IsDevelopment())
