@@ -3,10 +3,14 @@
  * Developed by John Shields
  */
 
+using HurleyAPI.Services;
 using ApiService = HurleyAPI.Services.HurleyAPI;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Read the IssueService data file path from configuration (fallback to "Data/issues.json" if not set)
+IssueService.DataFilePath = builder.Configuration.GetValue<string>("IssueSettings:DataFilePath", "Data/issues.json");
 
 // Configure services
 ConfigureServices(builder.Services);

@@ -12,6 +12,7 @@ public static class IssueService
         Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
     };
 
+    public static string DataFilePath { get; set; } = "Data/issues.json";
     public static List<IssueReport> Issues { get; set; } = [];
 
     // Load all issues from a local JSON file
@@ -45,7 +46,7 @@ public static class IssueService
             : null;
 
         Issues[Issues.IndexOf(existing)] = updated;
-        SaveIssuesToFile("Data/issues.json");
+        SaveIssuesToFile(DataFilePath);
 
         return updated;
     }
@@ -57,7 +58,7 @@ public static class IssueService
         if (existing is null) return false;
 
         Issues.Remove(existing);
-        SaveIssuesToFile("Data/issues.json");
+        SaveIssuesToFile(DataFilePath);
 
         return true;
     }
