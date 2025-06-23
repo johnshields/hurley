@@ -2,6 +2,30 @@
 
 A RESTful issue-tracking API for managing issues across teams and projects.
 
+## Development Environment
+
+### HurleyAPI
+- **.NET SDK** - 9.0.200
+- **Framework** - ASP.NET Core Minimal API
+- **Unit Testing** - xUnit
+
+### Tools
+- **OS** - Windows 11
+- **IDE** - JetBrains Rider 2025.1.3
+- **API Testing** - Postman
+
+## API Directory & File Structure
+
+```
+HurleyAPI              # Main API project
+│   Program.cs         # Application entry point
+│   appsettings.json   # Configuration file
+└───Data/              # JSON data storage
+└───Models/            # DTOs & enums
+└───Services/          # Business logic and API route registrations
+└───Tests/             # xUnit unit tests for IssueService
+```
+
 ## How to run
 
 ### Requirements
@@ -23,15 +47,3 @@ $ dotnet run # run API
 * The API will listen on: http://localhost:5147/
 * Swagger UI: https://localhost:5147/swagger/index.html
 ***
-
-## Development Environment
-
-### HurleyAPI
-- **.NET SDK** - 9.0.200
-- **Framework** - ASP.NET Core Minimal API
-- **Unit Testing** - xUnit
-
-### Tools
-- **OS** - Windows 11
-- **IDE** - JetBrains Rider 2025.1.3
-- **API Testing** - Postman
