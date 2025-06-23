@@ -152,6 +152,23 @@ public class IssueServiceTests
         Assert.Empty(loaded);
     }
 
+    // Ensures filtering the issues by IssueSeverity return the correct subset
+    [Fact]
+    public void FilterIssuesBySeverity_ReturnsCorrectSubset()
+    {
+        IssueService.Issues = GetTestIssues();
+        var severityFilter = IssueSeverity.High;
+
+        // Act
+        var filtered = IssueService.Issues
+            .Where(i => i.Severity == severityFilter)
+            .ToList();
+
+        // Assert
+        Assert.Single(filtered);
+        Assert.All(filtered, issue => Assert.Equal(IssueSeverity.High, issue.Severity));
+    }
+
     // Cleanup temp test file
     ~IssueServiceTests()
     {

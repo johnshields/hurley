@@ -17,6 +17,7 @@ public static class HurleyAPI
         CreateIssue(app);
         UpdateIssueById(app);
         DeleteIssueById(app);
+        GetIssuesBySeverity(app);
     }
 
     private static void Root(WebApplication app)
@@ -106,5 +107,21 @@ public static class HurleyAPI
             .WithTags("Issues")
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound);
+    }
+    
+    private static void GetIssuesBySeverity(WebApplication app)
+    {
+        app.MapGet("/issues/filter", (IssueSeverity severity) =>
+            {
+                var filteredIssues = IssueService.Issues
+                    .Where(i => i.Severity == severity)
+                    .ToList();
+            
+                return Results.Ok(filteredIssues);
+            })
+            .WithName("GetIssuesBySeverity")
+            .WithDescription("Filters issues by their severity level.")
+            .WithTags("Issues")
+            .Produces<List<IssueReport>>();
     }
 }
