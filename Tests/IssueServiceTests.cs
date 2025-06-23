@@ -7,7 +7,7 @@ namespace HurleyAPI.Tests;
 
 public class IssueServiceTests
 {
-    // Temporary file path for test-generated JSON
+    // Temporary file path for test JSON
     private const string TempFilePath = "temp_issues.json";
 
     private static JsonSerializerOptions JsonOptions => new()

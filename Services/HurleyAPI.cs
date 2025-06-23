@@ -9,8 +9,7 @@ public static class HurleyAPI
     // Entry point: register routes and load data
     public static void Register(WebApplication app)
     {
-        // Load persisted issues at startup
-        IssueService.LoadIssuesFromFile(DataFilePath);
+        IssueService.LoadIssuesFromFile(DataFilePath); // Load persisted issues at startup
 
         Root(app);
 

@@ -52,7 +52,6 @@ static void ConfigureMiddleware(WebApplication app)
         app.UseSwagger();
         app.UseSwaggerUI();
     }
-
-    // Register API routes
-    ApiService.Register(app);
+    
+    ApiService.Register(app); // Register API routes
 }
