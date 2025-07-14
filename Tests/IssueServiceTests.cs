@@ -5,6 +5,7 @@ using Xunit;
 
 namespace HurleyAPI.Tests;
 
+// TODO: rewrite test for refactored MySQL func
 public class IssueServiceTests
 {
     // Temporary file path for test JSON
