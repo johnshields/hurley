@@ -6,6 +6,7 @@
 using HurleyAPI.Services;
 using ApiService = HurleyAPI.Services.HurleyAPI;
 using Microsoft.OpenApi.Models;
+using MySql.Data.MySqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +19,7 @@ ConfigureServices(builder.Services);
 // Build the app
 var app = builder.Build();
 
-// Configure middleware and endpoints
+// Configure middleware, test DB connection, and register API routes
 ConfigureMiddleware(app);
 app.Run();
 return;
@@ -52,6 +53,26 @@ static void ConfigureMiddleware(WebApplication app)
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+    
+    TestDatabaseConnection(app.Configuration);
 
     ApiService.Register(app); // Register API routes
+}
+
+static void TestDatabaseConnection(IConfiguration config)
+{
+    var connectionString = config.GetConnectionString("DefaultConnection") 
+                           ?? throw new Exception("Connection string not found");
+
+    try
+    {
+        using var connect = new MySqlConnection(connectionString);
+        connect.Open();
+        Console.WriteLine("success MySQL connect");
+        connect.Close();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"fail MySQL connect: {ex.Message}");
+    }
 }

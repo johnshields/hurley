@@ -15,7 +15,6 @@ public static class HurleyAPI
 
         // Issues endpoints
         GetAllIssues(app);
-        GetIssueById(app);
         CreateIssue(app);
         UpdateIssueById(app);
         DeleteIssueById(app);
@@ -37,42 +36,23 @@ public static class HurleyAPI
 
     private static void GetAllIssues(WebApplication app)
     {
-        app.MapGet("/issues", (
+        app.MapGet("/issues", async (
+                string? id,
                 IssueSeverity? severity,
                 IssueStatus? status,
                 DateTime? createdAfter,
                 DateTime? createdBefore) =>
             {
-                // Filters the list of issues based on optional query parameters: severity, status and created date
-                var filteredIssues = IssueService.Issues
-                    .Where(i => !severity.HasValue || i.Severity == severity.Value)
-                    .Where(i => !status.HasValue || i.Status == status.Value)
-                    .Where(i => !createdAfter.HasValue || i.CreatedAt >= createdAfter.Value)
-                    .Where(i => !createdBefore.HasValue || i.CreatedAt <= createdBefore.Value)
-                    .ToList();
+                var issues = await IssueService.LoadIssuesFromDatabase(
+                    app.Configuration.GetConnectionString("DefaultConnection")!, 
+                    id, severity, status, createdAfter, createdBefore);
 
-                return Results.Ok(filteredIssues);
+                return Results.Ok(issues);
             })
             .WithName("GetAllIssues")
             .WithDescription("Retrieves all issues or filters by severity, status, or creation date.")
             .WithTags("Issues")
             .Produces<List<IssueReport>>();
-    }
-
-    private static void GetIssueById(WebApplication app)
-    {
-        app.MapGet("/issues/{id}", (string id) =>
-            {
-                var issue = IssueService.Issues.FirstOrDefault(x => x.Id == id);
-                return issue is not null
-                    ? Results.Ok(issue)
-                    : Results.NotFound(new { message = $"Issue with ID '{id}' not found." });
-            })
-            .WithName("GetIssueById")
-            .WithDescription("Retrieves a single issue by its unique ID.")
-            .WithTags("Issues")
-            .Produces<IssueReport>()
-            .Produces(StatusCodes.Status404NotFound);
     }
 
     private static void CreateIssue(WebApplication app)

@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
 using HurleyAPI.Models;
+using Dapper;
+using MySql.Data.MySqlClient;
 
 namespace HurleyAPI.Services;
 
@@ -24,6 +26,55 @@ public static class IssueService
         var loaded = JsonSerializer.Deserialize<List<IssueReport>>(json, JsonOptions);
         if (loaded is not null)
             Issues = loaded;
+    }
+
+    public static async Task<List<IssueReport>> LoadIssuesFromDatabase(
+        string connectionString,
+        string? id,
+        IssueSeverity? severity,
+        IssueStatus? status,
+        DateTime? createdAfter,
+        DateTime? createdBefore)
+    {
+        await using var connection = new MySqlConnection(connectionString);
+
+        var sql = "SELECT * FROM issues WHERE 1 = 1";
+        var parameters = new DynamicParameters();
+        
+        if (!string.IsNullOrWhiteSpace(id))
+        {
+            sql += " AND Id = @Id";
+            parameters.Add("Id", id);
+        }
+
+        if (severity.HasValue)
+        {
+            sql += " AND Severity = @Severity";
+            parameters.Add("Severity", severity.Value.ToString());
+        }
+
+        if (status.HasValue)
+        {
+            sql += " AND Status = @Status";
+            parameters.Add("Status", status.Value.ToString());
+        }
+
+        if (createdAfter.HasValue)
+        {
+            sql += " AND CreatedAt >= @CreatedAfter";
+            parameters.Add("CreatedAfter", createdAfter.Value);
+        }
+
+        if (createdBefore.HasValue)
+        {
+            sql += " AND CreatedAt <= @CreatedBefore";
+            parameters.Add("CreatedBefore", createdBefore.Value);
+        }
+
+        sql += " ORDER BY CreatedAt DESC";
+
+        var results = await connection.QueryAsync<IssueReport>(sql, parameters);
+        return results.ToList();
     }
 
     // Save current issues to a local JSON file
