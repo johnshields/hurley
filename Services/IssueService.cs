@@ -13,22 +13,10 @@ public static class IssueService
         WriteIndented = true,
         Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
     };
-
-    public static string DataFilePath { get; set; } = "Data/issues.json";
+    
     public static string DbConnectionString { get; set; } = string.Empty;
 
     public static List<IssueReport> Issues { get; set; } = [];
-
-    // Load all issues from a local JSON file
-    public static void LoadIssuesFromFile(string path)
-    {
-        if (!File.Exists(path)) return;
-
-        var json = File.ReadAllText(path);
-        var loaded = JsonSerializer.Deserialize<List<IssueReport>>(json, JsonOptions);
-        if (loaded is not null)
-            Issues = loaded;
-    }
 
     public static async Task<List<IssueReport>> LoadIssuesFromDatabase(
         string connectionString,
@@ -131,12 +119,9 @@ public static class IssueService
     // Delete an issue by ID
     public static bool DeleteIssueById(string id)
     {
-        var existing = Issues.FirstOrDefault(i => i.Id == id);
-        if (existing is null) return false;
-
-        Issues.Remove(existing);
-        SaveIssuesToFile(DataFilePath);
-
-        return true;
+        using var connection = new MySqlConnection(DbConnectionString);
+        const string sql = "DELETE FROM issues WHERE Id = @Id";
+        var affectedRows = connection.Execute(sql, new { Id = id });
+        return affectedRows > 0;
     }
 }

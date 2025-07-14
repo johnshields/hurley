@@ -4,13 +4,9 @@ namespace HurleyAPI.Services;
 
 public static class HurleyAPI
 {
-    private static readonly string DataFilePath = IssueService.DataFilePath;
-
     // Entry point: register routes and load data
     public static void Register(WebApplication app)
     {
-        IssueService.LoadIssuesFromFile(DataFilePath); // Load persisted issues at startup
-
         Root(app);
 
         // Issues endpoints
@@ -57,12 +53,11 @@ public static class HurleyAPI
 
     private static void CreateIssue(WebApplication app)
     {
-        app.MapPost("/issues", (IssueReport newIssue, IConfiguration config) =>
+        app.MapPost("/issues", (IssueReport newIssue) =>
             {
                 newIssue.Id = Guid.NewGuid().ToString("N")[..8];
                 newIssue.CreatedAt = DateTime.UtcNow;
-
-                var connString = config.GetConnectionString("DefaultConnection");
+                
                 IssueService.InsertIssueToDatabase(newIssue);
 
                 return Results.Created($"/issues/{newIssue.Id}", newIssue);
@@ -75,7 +70,7 @@ public static class HurleyAPI
 
     private static void UpdateIssueById(WebApplication app)
     {
-        app.MapPut("/issues/{id}", (string id, IssueReport updatedIssue, IConfiguration config) =>
+        app.MapPut("/issues/{id}", (string id, IssueReport updatedIssue) =>
             {
                 var result = IssueService.UpdateIssueById(id, updatedIssue);
                 return result is null
