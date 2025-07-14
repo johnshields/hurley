@@ -15,6 +15,8 @@ public static class IssueService
     };
 
     public static string DataFilePath { get; set; } = "Data/issues.json";
+    public static string DbConnectionString { get; set; } = string.Empty;
+
     public static List<IssueReport> Issues { get; set; } = [];
 
     // Load all issues from a local JSON file
@@ -40,7 +42,7 @@ public static class IssueService
 
         var sql = "SELECT * FROM issues WHERE 1 = 1";
         var parameters = new DynamicParameters();
-        
+
         if (!string.IsNullOrWhiteSpace(id))
         {
             sql += " AND Id = @Id";
@@ -83,22 +85,36 @@ public static class IssueService
         var json = JsonSerializer.Serialize(Issues, JsonOptions);
         File.WriteAllText(path, json);
     }
-    
-    public static void InsertIssueToDatabase(IssueReport issue, string connectionString)
+
+    public static void InsertIssueToDatabase(IssueReport issue)
     {
         const string sql = @"
         INSERT INTO issues (id, title, description, severity, status, createdAt, resolvedAt)
         VALUES (@Id, @Title, @Description, @Severity, @Status, @CreatedAt, @ResolvedAt);";
 
-        using var connection = new MySqlConnection(connectionString);
+        using var connection = new MySqlConnection(DbConnectionString);
         connection.Execute(sql, issue);
     }
-
 
     // Update an issue by ID
     public static IssueReport? UpdateIssueById(string id, IssueReport updated)
     {
-        var existing = Issues.FirstOrDefault(i => i.Id == id);
+        const string sql = @"
+        UPDATE issues
+        SET 
+            Title = @Title,
+            Description = @Description,
+            Severity = @Severity,
+            Status = @Status,
+            CreatedAt = @CreatedAt,
+            ResolvedAt = @ResolvedAt
+        WHERE Id = @Id;
+    ";
+
+        using var connection = new MySqlConnection(DbConnectionString);
+        var existing = connection.QuerySingleOrDefault<IssueReport>(
+            "SELECT * FROM issues WHERE Id = @Id", new { Id = id });
+
         if (existing is null) return null;
 
         updated.Id = existing.Id;
@@ -107,8 +123,7 @@ public static class IssueService
             ? DateTime.UtcNow
             : null;
 
-        Issues[Issues.IndexOf(existing)] = updated;
-        SaveIssuesToFile(DataFilePath);
+        connection.Execute(sql, updated);
 
         return updated;
     }

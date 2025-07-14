@@ -63,7 +63,7 @@ public static class HurleyAPI
                 newIssue.CreatedAt = DateTime.UtcNow;
 
                 var connString = config.GetConnectionString("DefaultConnection");
-                IssueService.InsertIssueToDatabase(newIssue, connString!);
+                IssueService.InsertIssueToDatabase(newIssue);
 
                 return Results.Created($"/issues/{newIssue.Id}", newIssue);
             })
@@ -75,7 +75,7 @@ public static class HurleyAPI
 
     private static void UpdateIssueById(WebApplication app)
     {
-        app.MapPut("/issues/{id}", (string id, IssueReport updatedIssue) =>
+        app.MapPut("/issues/{id}", (string id, IssueReport updatedIssue, IConfiguration config) =>
             {
                 var result = IssueService.UpdateIssueById(id, updatedIssue);
                 return result is null

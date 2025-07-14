@@ -13,6 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Read the IssueService data file path from configuration (fallback to "Data/issues.json" if not set)
 IssueService.DataFilePath = builder.Configuration.GetValue<string>("IssueSettings:DataFilePath", "Data/issues.json");
 
+IssueService.DbConnectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+                                  ?? throw new Exception("Connection string not found");
+
 // Configure services
 ConfigureServices(builder.Services);
 
