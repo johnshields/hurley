@@ -26,7 +26,7 @@ public static class HurleyAPI
             {
                 message = "Welcome to HurleyAPI.",
                 status = "OK",
-                version = "v1",
+                version = "v2",
                 timestamp = DateTime.UtcNow
             }))
             .WithName("GetRoot")
@@ -57,13 +57,13 @@ public static class HurleyAPI
 
     private static void CreateIssue(WebApplication app)
     {
-        app.MapPost("/issues", (IssueReport newIssue) =>
+        app.MapPost("/issues", (IssueReport newIssue, IConfiguration config) =>
             {
                 newIssue.Id = Guid.NewGuid().ToString("N")[..8];
                 newIssue.CreatedAt = DateTime.UtcNow;
 
-                IssueService.Issues.Add(newIssue);
-                IssueService.SaveIssuesToFile(DataFilePath);
+                var connString = config.GetConnectionString("DefaultConnection");
+                IssueService.InsertIssueToDatabase(newIssue, connString!);
 
                 return Results.Created($"/issues/{newIssue.Id}", newIssue);
             })

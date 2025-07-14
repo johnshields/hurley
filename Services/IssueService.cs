@@ -83,6 +83,17 @@ public static class IssueService
         var json = JsonSerializer.Serialize(Issues, JsonOptions);
         File.WriteAllText(path, json);
     }
+    
+    public static void InsertIssueToDatabase(IssueReport issue, string connectionString)
+    {
+        const string sql = @"
+        INSERT INTO issues (id, title, description, severity, status, createdAt, resolvedAt)
+        VALUES (@Id, @Title, @Description, @Severity, @Status, @CreatedAt, @ResolvedAt);";
+
+        using var connection = new MySqlConnection(connectionString);
+        connection.Execute(sql, issue);
+    }
+
 
     // Update an issue by ID
     public static IssueReport? UpdateIssueById(string id, IssueReport updated)
