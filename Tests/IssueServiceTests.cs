@@ -12,8 +12,8 @@ public class IssueServiceTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        var url = "";
-        var key = "";
+        var url = "https://usazxzejmarsjcygmkya.supabase.co";
+        var key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzYXp4emVqbWFyc2pjeWdta3lhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5MjI5MzksImV4cCI6MjA2OTQ5ODkzOX0.FlOxqcA7bd_B8Yn8rva6FJutVLjKoduQ1FZ76vuaoHo";
 
         var options = new SupabaseOptions
         {

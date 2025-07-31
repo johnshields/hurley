@@ -1,41 +1,84 @@
-# HurleyAPI
+# HurleyAPI 🐛
+A RESTful issue-tracking API for managing project issues across teams.  
+Now powered by **Supabase** and written in **.NET Minimal API**.
 
-A RESTful issue-tracking API for managing issues across teams and projects.
+---
 
-## Development Environment 🧰 
+## 🧰 Development Environment 
+
 - **.NET SDK** - 9.0.200
-- **Framework** - ASP.NET Core Minimal API
-- **Unit Testing** - xUnit
+- **ASP.NET Core Minimal API**
+- **Supabase** (PostgreSQL)
+- **xUnit** (for unit testing)
 
-## 📁 API Directory & File Structure 
+---
+
+## 📁 API Directory & File Structure
 ```
-HurleyAPI              # Main API project
-│   Program.cs         # Application entry point
-│   appsettings.json   # Configuration file
-└───Data/              # JSON data storage
-└───Models/            # DTOs & enums
-└───Services/          # Business logic and API route registrations
-└───Tests/             # xUnit unit tests for IssueService
+HurleyAPI/
+├── Models/                # DTOs & enums
+│   └── Enums.cs
+│   └── IssueDto.cs
+│   └── IssueReport.cs
+├── Services/              # Core business logic
+│   └── IssueService.cs
+├── Tests/                 # xUnit tests for IssueService
+│   └── IssueServiceTests.cs
+├── Program.cs             # API entry point and route definitions
+├── appsettings.json       # Configuration (unused for Supabase)
+└── HurleyAPI.csproj       # Project file
 ```
 
-## 🚀 How to run
+---
+
+## 🚀 How to Run
 
 ### Requirements
 
 - [Git](https://git-scm.com/downloads)
 - [.NET SDK 9.0.200](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
-- [xUnit](https://xunit.net/)
+- [Supabase](https://supabase.com/)
 - [Postman](https://www.postman.com/downloads/) _(for manual API testing)_
+
+---
+
+### ⚙️ Setup & Run
+
+#### Add Supabase credentials to `IssueServiceTests.cs`:
+```csharp
+var url = "your_supabase_url";
+var key = "your_supabase_anon_key";
+```
+
+#### Add the following to [launchSettings.json](Properties/launchSettings.json) under environmentVariables:
+```json
+"SUPABASE_URL": "your_supabase_url",
+"SUPABASE_KEY": "your_supabase_anon_key"
+```
+
+#### SQL script located here [Data/hurley_db.sql](Data/hurley_db.sql)
 
 #### Open a directory in Command-Line and enter:
 ```bash
-$ git clone https://github.com/johnshields/HurleyAPI
+$ git clone https://github.com/johnshields/HurleyAPI.git
 $ cd HurleyAPI/
 $ dotnet clean
 $ dotnet build
-$ dotnet test # run xUnit tests
-$ dotnet run # run API
+$ dotnet test    # run all xUnit tests
+$ dotnet run     # run the API
 ```
-* The API will listen on: http://localhost:5147/
-* Swagger UI: https://localhost:5147/swagger/index.html
-***
+
+- The API will listen on: http://localhost:5147/
+- View API Swagger docs: http://localhost:5147/swagger/index.html
+
+---
+
+## 📦 API Endpoints
+
+- `GET /issues` – List all issues (supports optional filters)
+- `GET /issues/{id}` – Get a single issue by ID
+- `POST /issues` – Insert a new issue
+- `PUT /issues/{id}` – Update an issue by ID
+- `DELETE /issues/{id}` – Delete an issue by ID
+
+---
