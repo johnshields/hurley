@@ -1,127 +1,101 @@
-﻿using System.Text.Json;
-using HurleyAPI.Models;
-using Dapper;
-using MySql.Data.MySqlClient;
+﻿using HurleyAPI.Models;
+using Supabase.Postgrest;
+using Supabase.Postgrest.Interfaces;
+using Client = Supabase.Client;
 
 namespace HurleyAPI.Services;
 
 public static class IssueService
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
+    private static Client? _supabase;
+    private const string Message = "Supabase client not initialised.";
+
+    public static void Initialize(Client supabaseClient)
     {
-        PropertyNameCaseInsensitive = true,
-        WriteIndented = true,
-        Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
-    };
-    
-    public static string DbConnectionString { get; set; } = string.Empty;
+        _supabase = supabaseClient;
+    }
 
-    public static List<IssueReport> Issues { get; set; } = [];
-
-    public static async Task<List<IssueReport>> LoadIssuesFromDatabase(
-        string connectionString,
-        string? id,
-        IssueSeverity? severity,
-        IssueStatus? status,
-        DateTime? createdAfter,
-        DateTime? createdBefore)
+    public static async Task<List<IssueReport>> LoadAllIssues(
+        IssueSeverity? severity = null,
+        IssueStatus? status = null,
+        DateTime? createdAfter = null,
+        DateTime? createdBefore = null)
     {
-        await using var connection = new MySqlConnection(connectionString);
+        if (_supabase == null)
+            throw new InvalidOperationException(Message);
 
-        var sql = "SELECT * FROM issues WHERE 1 = 1";
-        var parameters = new DynamicParameters();
-
-        if (!string.IsNullOrWhiteSpace(id))
-        {
-            sql += " AND Id = @Id";
-            parameters.Add("Id", id);
-        }
+        IPostgrestTable<IssueReport> query = _supabase.From<IssueReport>();
 
         if (severity.HasValue)
-        {
-            sql += " AND Severity = @Severity";
-            parameters.Add("Severity", severity.Value.ToString());
-        }
+            query = query.Filter("severity", Constants.Operator.Equals, severity.ToString());
 
         if (status.HasValue)
-        {
-            sql += " AND Status = @Status";
-            parameters.Add("Status", status.Value.ToString());
-        }
+            query = query.Filter("status", Constants.Operator.Equals, status.ToString());
 
         if (createdAfter.HasValue)
-        {
-            sql += " AND CreatedAt >= @CreatedAfter";
-            parameters.Add("CreatedAfter", createdAfter.Value);
-        }
+            query = query.Filter("created_at", Constants.Operator.GreaterThanOrEqual, createdAfter.Value.ToString("o"));
 
         if (createdBefore.HasValue)
-        {
-            sql += " AND CreatedAt <= @CreatedBefore";
-            parameters.Add("CreatedBefore", createdBefore.Value);
-        }
+            query = query.Filter("created_at", Constants.Operator.LessThanOrEqual, createdBefore.Value.ToString("o"));
 
-        sql += " ORDER BY CreatedAt DESC";
 
-        var results = await connection.QueryAsync<IssueReport>(sql, parameters);
-        return results.ToList();
+        var result = await query.Get();
+        return result.Models;
     }
 
-    // Save current issues to a local JSON file
-    public static void SaveIssuesToFile(string path)
+    public static async Task<IssueReport?> LoadIssueById(Guid id)
     {
-        var json = JsonSerializer.Serialize(Issues, JsonOptions);
-        File.WriteAllText(path, json);
+        if (_supabase == null)
+            throw new InvalidOperationException(Message);
+
+        var result = await _supabase
+            .From<IssueReport>()
+            .Where(x => x.Id == id)
+            .Get();
+
+        return result.Models.FirstOrDefault();
     }
 
-    public static void InsertIssueToDatabase(IssueReport issue)
+    public static async Task<bool> InsertNewIssue(IssueReport issue)
     {
-        const string sql = @"
-        INSERT INTO issues (id, title, description, severity, status, createdAt, resolvedAt)
-        VALUES (@Id, @Title, @Description, @Severity, @Status, @CreatedAt, @ResolvedAt);";
+        if (_supabase == null)
+            throw new InvalidOperationException(Message);
 
-        using var connection = new MySqlConnection(DbConnectionString);
-        connection.Execute(sql, issue);
+        var result = await _supabase
+            .From<IssueReport>()
+            .Insert(issue);
+
+        return result.ResponseMessage is { IsSuccessStatusCode: true };
     }
 
-    // Update an issue by ID
-    public static IssueReport? UpdateIssueById(string id, IssueReport updated)
+    public static async Task<bool> UpdateIssueById(Guid id, UpdateIssueDto updatedData)
     {
-        const string sql = @"
-        UPDATE issues
-        SET 
-            Title = @Title,
-            Description = @Description,
-            Severity = @Severity,
-            Status = @Status,
-            CreatedAt = @CreatedAt,
-            ResolvedAt = @ResolvedAt
-        WHERE Id = @Id;
-    ";
+        if (_supabase == null)
+            throw new InvalidOperationException(Message);
 
-        using var connection = new MySqlConnection(DbConnectionString);
-        var existing = connection.QuerySingleOrDefault<IssueReport>(
-            "SELECT * FROM issues WHERE Id = @Id", new { Id = id });
+        var existing = await LoadIssueById(id);
+        if (existing is null)
+            return false;
 
-        if (existing is null) return null;
+        existing.Title = updatedData.Title;
+        existing.Description = updatedData.Description;
+        existing.Severity = updatedData.Severity;
+        existing.Status = updatedData.Status;
+        existing.ResolvedAt = updatedData.ResolvedAt;
 
-        updated.Id = existing.Id;
-        updated.CreatedAt = existing.CreatedAt;
-        updated.ResolvedAt = updated.Status == IssueStatus.Resolved
-            ? DateTime.UtcNow
-            : null;
-
-        connection.Execute(sql, updated);
-
-        return updated;
+        var result = await _supabase.From<IssueReport>().Update(existing);
+        return result.ResponseMessage is { IsSuccessStatusCode: true };
     }
 
-    // Delete an issue by ID
-    public static bool DeleteIssueById(string id)
+    public static async Task<bool> DeleteIssueById(Guid id)
     {
-        using var connection = new MySqlConnection(DbConnectionString);
-        const string sql = "DELETE FROM issues WHERE Id = @Id";
-        var affectedRows = connection.Execute(sql, new { Id = id });
-        return affectedRows > 0;
+        if (_supabase == null)
+            throw new InvalidOperationException(Message);
+
+        var issue = await LoadIssueById(id);
+        if (issue is null) return false;
+
+        var result = await _supabase.From<IssueReport>().Delete(issue);
+        return result.ResponseMessage is { IsSuccessStatusCode: true };
     }
 }

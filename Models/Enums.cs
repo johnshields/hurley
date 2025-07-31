@@ -1,5 +1,8 @@
-﻿namespace HurleyAPI.Models;
+﻿using System.Text.Json.Serialization;
 
+namespace HurleyAPI.Models;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum IssueSeverity
 {
     Unknown,
@@ -9,6 +12,7 @@ public enum IssueSeverity
     Critical
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum IssueStatus
 {
     Unknown,

@@ -1,12 +1,29 @@
-﻿namespace HurleyAPI.Models;
+﻿using Supabase.Postgrest.Attributes;
+using Supabase.Postgrest.Models;
 
-public class IssueReport
+namespace HurleyAPI.Models;
+
+[Table("issues")]
+public class IssueReport : BaseModel
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString("N")[..8];
+    [PrimaryKey("id", false)]
+    public Guid Id { get; set; }
+
+    [Column("title")]
     public string Title { get; set; } = string.Empty;
+
+    [Column("description")]
     public string Description { get; set; } = string.Empty;
-    public IssueSeverity Severity { get; set; } = IssueSeverity.Unknown;
-    public IssueStatus Status { get; set; } = IssueStatus.Unknown;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    [Column("severity")]
+    public IssueSeverity Severity { get; set; }
+
+    [Column("status")]
+    public IssueStatus Status { get; set; }
+
+    [Column("created_at")]
+    public DateTime CreatedAt { get; set; }
+
+    [Column("resolved_at")]
     public DateTime? ResolvedAt { get; set; }
 }

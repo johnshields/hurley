@@ -11,6 +11,7 @@ public static class HurleyAPI
 
         // Issues endpoints
         GetAllIssues(app);
+        GetIssueById(app);
         CreateIssue(app);
         UpdateIssueById(app);
         DeleteIssueById(app);
@@ -33,62 +34,111 @@ public static class HurleyAPI
     private static void GetAllIssues(WebApplication app)
     {
         app.MapGet("/issues", async (
-                string? id,
                 IssueSeverity? severity,
                 IssueStatus? status,
                 DateTime? createdAfter,
                 DateTime? createdBefore) =>
             {
-                var issues = await IssueService.LoadIssuesFromDatabase(
-                    app.Configuration.GetConnectionString("DefaultConnection")!, 
-                    id, severity, status, createdAfter, createdBefore);
+                var issues = await IssueService.LoadAllIssues(severity, status, createdAfter, createdBefore);
 
-                return Results.Ok(issues);
+                var cleanIssues = issues.Select(issue => new IssueDto(
+                    issue.Id,
+                    issue.Title,
+                    issue.Description,
+                    issue.Severity,
+                    issue.Status,
+                    issue.CreatedAt,
+                    issue.ResolvedAt
+                ));
+
+                return Results.Ok(cleanIssues);
             })
             .WithName("GetAllIssues")
-            .WithDescription("Retrieves all issues or filters by severity, status, or creation date.")
+            .WithDescription("Retrieves all issues or filters by severity, status, or creation date range.")
             .WithTags("Issues")
-            .Produces<List<IssueReport>>();
+            .Produces<List<IssueDto>>();
+    }
+
+    private static void GetIssueById(WebApplication app)
+    {
+        app.MapGet("/issues/{id:guid}", async (Guid id) =>
+            {
+                var issue = await IssueService.LoadIssueById(id);
+                if (issue is null)
+                    return Results.NotFound(new { error = $"Issue with ID '{id}' not found." });
+
+                var dto = new IssueDto(
+                    issue.Id,
+                    issue.Title,
+                    issue.Description,
+                    issue.Severity,
+                    issue.Status,
+                    issue.CreatedAt,
+                    issue.ResolvedAt
+                );
+
+                return Results.Ok(dto);
+            })
+            .WithName("GetIssueById")
+            .WithDescription("Retrieves a single issue by its unique ID.")
+            .WithTags("Issues")
+            .Produces<IssueDto>()
+            .Produces(StatusCodes.Status404NotFound);
     }
 
     private static void CreateIssue(WebApplication app)
     {
-        app.MapPost("/issues", (IssueReport newIssue) =>
+        app.MapPost("/issues", async (CreateIssueDto newIssue) =>
             {
-                newIssue.Id = Guid.NewGuid().ToString("N")[..8];
-                newIssue.CreatedAt = DateTime.UtcNow;
-                
-                IssueService.InsertIssueToDatabase(newIssue);
+                var issue = new IssueReport
+                {
+                    Title = newIssue.Title,
+                    Description = newIssue.Description,
+                    Severity = newIssue.Severity,
+                    Status = newIssue.Status,
+                    CreatedAt = DateTime.UtcNow,
+                    ResolvedAt = null
+                };
 
-                return Results.Created($"/issues/{newIssue.Id}", newIssue);
+                var created = await IssueService.InsertNewIssue(issue);
+                if (!created)
+                {
+                    return Results.Problem("Failed to insert new issue into database.");
+                }
+
+                return Results.Created($"/issues/{issue.Id}", new { message = "Issue created." });
             })
             .WithName("CreateIssue")
-            .WithDescription("Creates a new issue.")
+            .WithDescription("Creates a new issue and stores it in the database.")
             .WithTags("Issues")
-            .Produces<IssueReport>(StatusCodes.Status201Created);
+            .Accepts<CreateIssueDto>("application/json")
+            .Produces<IssueDto>(StatusCodes.Status201Created)
+            .Produces(StatusCodes.Status500InternalServerError);
     }
 
     private static void UpdateIssueById(WebApplication app)
     {
-        app.MapPut("/issues/{id}", (string id, IssueReport updatedIssue) =>
+        app.MapPut("/issues/{id:guid}", async (Guid id, UpdateIssueDto updated) =>
             {
-                var result = IssueService.UpdateIssueById(id, updatedIssue);
-                return result is null
-                    ? Results.NotFound(new { error = $"Issue with ID '{id}' not found." })
-                    : Results.Ok(result);
+                var success = await IssueService.UpdateIssueById(id, updated);
+                if (!success)
+                    return Results.NotFound(new { error = $"Issue with ID '{id}' not found." });
+
+                return Results.NoContent(); // 204 No Content = successful update, nothing returned
             })
             .WithName("UpdateIssueById")
-            .WithDescription("Updates an issue by its unique ID.")
+            .WithDescription("Updates an existing issue.")
             .WithTags("Issues")
-            .Produces<IssueReport>()
+            .Accepts<UpdateIssueDto>("application/json")
+            .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound);
     }
 
     private static void DeleteIssueById(WebApplication app)
     {
-        app.MapDelete("issues/{id}", (string id) =>
+        app.MapDelete("/issues/{id:guid}", async (Guid id) =>
             {
-                var deleted = IssueService.DeleteIssueById(id);
+                var deleted = await IssueService.DeleteIssueById(id);
                 return deleted
                     ? Results.Ok(new { message = $"Issue with ID '{id}' was deleted." })
                     : Results.NotFound(new { error = $"Issue with ID '{id}' not found." });
