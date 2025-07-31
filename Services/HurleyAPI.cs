@@ -122,9 +122,11 @@ public static class HurleyAPI
             {
                 var success = await IssueService.UpdateIssueById(id, updated);
                 if (!success)
+                {
                     return Results.NotFound(new { error = $"Issue with ID '{id}' not found." });
+                }
 
-                return Results.NoContent(); // 204 No Content = successful update, nothing returned
+                return Results.NoContent();
             })
             .WithName("UpdateIssueById")
             .WithDescription("Updates an existing issue.")
