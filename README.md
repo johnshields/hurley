@@ -60,7 +60,7 @@ var key = "your_supabase_anon_key";
 
 #### Open a directory in Command-Line and enter:
 ```bash
-$ git clone https://github.com/johnshields/HurleyAPI.git
+$ git clone https://github.com/johnshields/hurley.git
 $ cd HurleyAPI/
 $ dotnet clean
 $ dotnet build
@@ -75,10 +75,10 @@ $ dotnet run     # run the API
 
 ## 📦 API Endpoints
 
-- `GET /issues` – List all issues (supports optional filters)
-- `GET /issues/{id}` – Get a single issue by ID
-- `POST /issues` – Insert a new issue
-- `PUT /issues/{id}` – Update an issue by ID
-- `DELETE /issues/{id}` – Delete an issue by ID
+- `GET /api/issues` – List all issues (supports optional filters)
+- `GET /api/issues/{id}` – Get a single issue by ID
+- `POST /api/issues` – Insert a new issue
+- `PUT /api/issues/{id}` – Update an issue by ID
+- `DELETE /api/issues/{id}` – Delete an issue by ID
 
 ---

@@ -4,6 +4,8 @@ namespace HurleyAPI.Services;
 
 public static class HurleyAPI
 {
+    private static string _uri = "api/issues";
+    
     // Entry point: register routes and load data
     public static void Register(WebApplication app)
     {
@@ -33,7 +35,7 @@ public static class HurleyAPI
 
     private static void GetAllIssues(WebApplication app)
     {
-        app.MapGet("/issues", async (
+        app.MapGet(_uri, async (
                 IssueSeverity? severity,
                 IssueStatus? status,
                 DateTime? createdAfter,
@@ -61,7 +63,7 @@ public static class HurleyAPI
 
     private static void GetIssueById(WebApplication app)
     {
-        app.MapGet("/issues/{id:guid}", async (Guid id) =>
+        app.MapGet(_uri + "{id:guid}", async (Guid id) =>
             {
                 var issue = await IssueService.LoadIssueById(id);
                 if (issue is null)
@@ -88,7 +90,7 @@ public static class HurleyAPI
 
     private static void CreateIssue(WebApplication app)
     {
-        app.MapPost("/issues", async (CreateIssueDto newIssue) =>
+        app.MapPost(_uri, async (CreateIssueDto newIssue) =>
             {
                 var issue = new IssueReport
                 {
@@ -118,7 +120,7 @@ public static class HurleyAPI
 
     private static void UpdateIssueById(WebApplication app)
     {
-        app.MapPut("/issues/{id:guid}", async (Guid id, UpdateIssueDto updated) =>
+        app.MapPut(_uri + "{id:guid}", async (Guid id, UpdateIssueDto updated) =>
             {
                 var success = await IssueService.UpdateIssueById(id, updated);
                 if (!success)
@@ -138,7 +140,7 @@ public static class HurleyAPI
 
     private static void DeleteIssueById(WebApplication app)
     {
-        app.MapDelete("/issues/{id:guid}", async (Guid id) =>
+        app.MapDelete(_uri + "{id:guid}", async (Guid id) =>
             {
                 var deleted = await IssueService.DeleteIssueById(id);
                 return deleted
