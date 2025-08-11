@@ -3,7 +3,7 @@ using Supabase.Postgrest.Models;
 
 namespace HurleyAPI.Models;
 
-[Table("issues")]
+[Table("hy_issues")]
 public class IssueReport : BaseModel
 {
     [PrimaryKey("id", false)]
