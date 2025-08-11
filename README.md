@@ -44,24 +44,29 @@ HurleyAPI/
 
 ### ⚙️ Setup & Run
 
+#### Open a directory in Command-Line and enter:
+```bash
+$ git clone https://github.com/johnshields/hurley.git
+$ cd hurley/
+```
+
+#### Add Supabase credentials to [launchSettings.json](Properties/launchSettings.json) under environmentVariables:
+```json
+"SUPABASE_URL": "your_supabase_url",
+"SUPABASE_KEY": "your_supabase_anon_key"
+```
+
 #### Add Supabase credentials to `IssueServiceTests.cs`:
 ```csharp
 var url = "your_supabase_url";
 var key = "your_supabase_anon_key";
 ```
 
-#### Add the following to [launchSettings.json](Properties/launchSettings.json) under environmentVariables:
-```json
-"SUPABASE_URL": "your_supabase_url",
-"SUPABASE_KEY": "your_supabase_anon_key"
-```
-
 #### SQL script located here [Data/hurley_db.sql](Data/hurley_db.sql)
 
-#### Open a directory in Command-Line and enter:
+#### Run the API
+
 ```bash
-$ git clone https://github.com/johnshields/hurley.git
-$ cd HurleyAPI/
 $ dotnet clean
 $ dotnet build
 $ dotnet test    # run all xUnit tests
