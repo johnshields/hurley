@@ -1,6 +1,6 @@
 # HurleyAPI 🐛
-A RESTful issue-tracking API for managing project issues across teams.  
-Now powered by **Supabase** and written in **.NET Minimal API**.
+
+A C#/.NET issue-tracking API using PostgreSQL as the backend database. Features Dapper ORM integration for efficient SQL queries, full CRUD functionality, and LINQ-powered filter endpoints and tested via xUnit.
 
 ---
 
