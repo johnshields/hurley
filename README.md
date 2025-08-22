@@ -1,17 +1,6 @@
 # HurleyAPI 🐛
 
-A C#/.NET issue-tracking API using PostgreSQL as the backend database. Features Dapper ORM integration for efficient SQL queries, full CRUD functionality, and LINQ-powered filter endpoints and tested via xUnit.
-
----
-
-## 🧰 Development Environment 
-
-- **.NET SDK** - 9.0.200
-- **ASP.NET Core Minimal API**
-- **Supabase** (PostgreSQL)
-- **xUnit** (for unit testing)
-
----
+A C#/.NET issue-tracking API using Supabase (PostgreSQL) as the backend database. Features Dapper ORM integration for efficient SQL queries, full CRUD functionality, and LINQ-powered filter endpoints and tested via xUnit.
 
 ## 📁 API Directory & File Structure
 ```
@@ -28,21 +17,16 @@ HurleyAPI/
 ├── appsettings.json       # Configuration (unused for Supabase)
 └── HurleyAPI.csproj       # Project file
 ```
-
 ---
 
-## 🚀 How to Run
-
-### Requirements
+#### Requirements
 
 - [Git](https://git-scm.com/downloads)
 - [.NET SDK 9.0.200](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 - [Supabase](https://supabase.com/)
 - [Postman](https://www.postman.com/downloads/) _(for manual API testing)_
 
----
-
-### ⚙️ Setup & Run
+## Run service:
 
 #### Open a directory in Command-Line and enter:
 ```bash
