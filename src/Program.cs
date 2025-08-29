@@ -32,7 +32,7 @@ var supabase = new Client(url, key, options);
 
 try
 {
-    await supabase.InitializeAsync(); // will not try websocket if AutoConnectRealtime=false
+    await supabase.InitializeAsync();
 }
 catch (Exception ex)
 {
