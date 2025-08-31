@@ -4,7 +4,7 @@ A C#/.NET issue-tracking API using Supabase (PostgreSQL) as the backend database
 
 ## 📁 API Directory & File Structure
 ```
-HurleyAPI/
+src/
 ├── Models/                # DTOs & enums
 │   └── Enums.cs
 │   └── IssueDto.cs
@@ -46,7 +46,7 @@ var url = "your_supabase_url";
 var key = "your_supabase_anon_key";
 ```
 
-#### SQL script located here [Data/hurley_db.sql](Data/hurley_db.sql)
+#### SQL script located here [works/sql/hurley_db.sql](works/sql/hurley_db.sql)
 
 #### Run the API
 
