@@ -46,7 +46,7 @@ var url = "your_supabase_url";
 var key = "your_supabase_anon_key";
 ```
 
-#### SQL script located here [works/sql/hurley_db.sql](works/sql/hurley_db.sql)
+#### SQL script located here [sql/hurley_db.sql](works/sql/hurley_db.sql)
 
 #### Run the API
 
